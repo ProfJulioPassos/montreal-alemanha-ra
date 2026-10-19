@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#071324"><title>RA · Portão de Brandemburgo | Montreal</title>
+<link rel="stylesheet" href="assets/style.css">
+<script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+<script src="https://raw.githack.com/AR-js-org/AR.js/3.4.8/aframe/build/aframe-ar.js"></script>
+<script src="assets/portao.js"></script>
+</head><body class="ar-page">
+<div id="scene-area">
+  <a-scene embedded vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" arjs="sourceType: webcam; facingMode: environment; videoTexture: true; debugUIEnabled: false;" renderer="antialias: true; colorManagement: true; physicallyCorrectLights: true; precision: medium" loading-screen="enabled: false">
+    <a-marker id="hiro" preset="hiro" emitevents="true" smooth="true" smoothCount="7" smoothTolerance="0.02" smoothThreshold="3">
+      <a-entity id="gatePose" rotation="-90 0 0" position="0 0.035 0">
+        <a-entity id="theGate" portao-montreal scale="0.19 0.19 0.19" position="0 0 0"></a-entity>
+      </a-entity>
+    </a-marker>
+    <a-entity light="type: ambient; color: #fff6df; intensity: 1.7"></a-entity>
+    <a-entity light="type: directional; color: #fff3d8; intensity: 2.0" position="-1 4 5"></a-entity>
+    <a-entity camera></a-entity>
+  </a-scene>
+</div>
+<div class="ar-overlay">
+  <header class="ar-header"><div class="logo">COLÉGIO <em>MONTREAL</em><br><span style="font-weight:400;font-size:11px;color:#e5d7bd">🇩🇪 Alemanha · 4º ano</span></div><a href="index.html" class="close">✕ Sair</a></header>
+  <div class="ar-bottom">
+    <div id="status" class="status" role="status" aria-live="polite"><span class="dot"></span><span id="status-text">Aguardando câmera… Aponte para o marcador HIRO no painel.</span></div>
+    <div class="ar-controls"><button id="rotate" class="ar-control" type="button">↻ Ajustar orientação</button><button id="about" class="ar-control" type="button">ⓘ Curiosidades</button><button id="help" class="ar-control" type="button">? Ajuda</button><a class="ar-control" style="text-decoration:none;display:inline-flex;align-items:center" href="modelo.html">◈ Ver em 3D</a></div>
+  </div>
+</div>
+<div class="info-dialog" id="about-panel" role="dialog" aria-label="Curiosidades" hidden><button data-close type="button">Fechar ✕</button><h2>🇩🇪 Portão de Brandemburgo</h2><p><strong>Um símbolo de Berlim e da reunificação alemã.</strong></p><ul><li>Foi construído entre <strong>1788 e 1791</strong>, pelo arquiteto Carl Gotthard Langhans.</li><li>Seu desenho tem inspiração na arquitetura da Grécia Antiga.</li><li>O monumento apresenta <strong>duas fileiras de seis colunas</strong> e cinco passagens.</li><li>No topo está a <strong>Quadriga</strong>, com quatro cavalos e a figura da deusa Vitória, instalada em 1793.</li><li>Após a queda do Muro de Berlim em 1989, tornou-se símbolo de liberdade e reunificação.</li></ul><p style="font-size:12px">Fonte: <a href="https://www.visitberlin.de/en/brandenburg-gate" target="_blank" rel="noopener noreferrer">visitBerlin</a>. A maquete é uma representação estilizada, não uma reconstrução arquitetônica exata.</p></div>
+<div class="info-dialog" id="help-panel" role="dialog" aria-label="Ajuda" hidden><button data-close type="button">Fechar ✕</button><h2>Como fazer a magia acontecer?</h2><p>1. Use Safari no iPhone ou Chrome no Android.<br>2. Aceite o acesso à câmera.<br>3. Posicione o celular de frente para o <strong>marcador HIRO</strong> impresso junto ao painel, aproximadamente a 20–50 cm.<br>4. Mantenha boa iluminação e evite reflexos no papel.<br>5. Se o monumento parecer deitado, toque em <strong>Ajustar orientação</strong>.<br>6. Se a câmera não funcionar, toque em <strong>Ver em 3D</strong>.</p><p style="font-size:12px">Para abrir a câmera, é necessário publicar o site em HTTPS. A câmera é processada no aparelho pela biblioteca de RA; este protótipo não envia nem armazena fotos ou dados pessoais.</p></div>
+<script>
+(function(){
+  const marker=document.getElementById('hiro'),status=document.getElementById('status'),statusText=document.getElementById('status-text');
+  let orientation=0; const options=['-90 0 0','0 0 0','90 0 0'];
+  marker.addEventListener('markerFound',()=>{status.classList.add('found');statusText.textContent='Monumento encontrado! Mova o celular lentamente para explorar.';});
+  marker.addEventListener('markerLost',()=>{status.classList.remove('found');statusText.textContent='Procure novamente o marcador HIRO no painel.';});
+  document.getElementById('rotate').addEventListener('click',()=>{orientation=(orientation+1)%options.length;document.getElementById('gatePose').setAttribute('rotation',options[orientation]);});
+  const panels=[document.getElementById('about-panel'),document.getElementById('help-panel')];
+  function open(which){panels.forEach(p=>p.hidden=(p.id!==which));}
+  document.getElementById('about').addEventListener('click',()=>open('about-panel'));
+  document.getElementById('help').addEventListener('click',()=>open('help-panel'));
+  document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>panels.forEach(p=>p.hidden=true)));
+  if (!window.isSecureContext){statusText.textContent='A câmera exige HTTPS. Publique em GitHub Pages antes de testar no celular.';}
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){statusText.textContent='Câmera indisponível neste navegador. Abra no Chrome/Safari ou utilize Ver em 3D.';}
+  window.setTimeout(()=>{if(!status.classList.contains('found') && statusText.textContent.startsWith('Aguardando')){statusText.textContent='Câmera ativa? Aponte para o marcador HIRO com boa iluminação. Toque em Ajuda se necessário.'}},9000);
+})();
+</script>
+</body></html>
